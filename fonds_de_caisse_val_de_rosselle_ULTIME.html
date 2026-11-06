@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Val de Rosselle - Fonds de Caisse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lions: {
+                            blue: '#003366',
+                            gold: '#FFC72C',
+                            darkGold: '#D99B00',
+                            lightBg: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 8mm;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 10pt !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .print-container {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .grid-print-2 {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 1.5rem !important;
+            }
+
+            input {
+                border: 1px solid #000000 !important;
+                background-color: #ffff00 !important;
+                color: #000000 !important;
+                font-weight: bold !important;
+                box-shadow: none !important;
+            }
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        input:focus {
+            outline: 2px solid #FFC72C;
+            outline-offset: 1px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen py-4 md:py-8 font-sans">
+
+    <!-- BARRE D'ACTIONS FLOTTANTE -->
+    <div class="no-print max-w-4xl mx-auto mb-6 px-4 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center space-x-2">
+            <span class="inline-block w-3 h-3 rounded-full bg-emerald-500"></span>
+            <span class="text-sm font-medium text-slate-600">Calculs automatiques actifs</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button id="btnReset" type="button" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium rounded-lg text-sm transition flex items-center gap-2 cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Effacer
+            </button>
+            <button id="btnPrint" type="button" onclick="window.print();" class="px-5 py-2 bg-lions-blue hover:bg-blue-900 text-white font-semibold rounded-lg text-sm shadow-md transition flex items-center gap-2 cursor-pointer">
+                <svg class="w-4 h-4 text-lions-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Imprimer / PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- DOCUMENT PRINCIPAL -->
+    <div class="print-container max-w-4xl mx-auto bg-white rounded-xl shadow-xl border border-slate-200 p-6 md:p-10 space-y-6">
+
+        <!-- EN-TÊTE ET LOGO -->
+        <header class="border-b-2 border-black pb-4 flex flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 text-left">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABHCAYAAACkuwGSAAAQAElEQVR4Aex6B3xVVbb3f51b03tvBAIhIYFA6CG00EFAOkoZngNYx97Gho6O46DoWAflqXTpVQWkBEINBAgQSkhCSO/93tzccta3bhx94zjjwzLz5vf7Zufsc/fZda3/WW3vEwX/ST+IwL8RQEuElo0awJmZfpDqf2GjEPUvXK19KQEi8X0fbdq7AzB42XyMfv1ujFz2FoYaViE1fzWGFa7GiD+sxPg/voIxy+7CoDfmYeg7vTH0E29AxrbP8a+7/WsA6vCJEQOWd8XApXP0o/Wv+nYo3dQ59MaGAfGFn47oXPDBosEnH3x80tE7H514dPYj4zJmPzj6+NypPS78tn9E4Yr+8YUr4zvc2Ojrk7dZO07zBwx9fT6GL++F2P/2+FfA9M8FaND7PkhdOkvTteLDkNCSrSN7X/7wiZGHn/hwzq60j2Zuilg2YYt678B0Hhd7kX/V/Qw/N2w/vzJyj/q7tK/U927bpq6/c7X63sSt6jtTdkYvn7U77bcjMh6f2Pv88qjgvB3ajpUfI+1Pi4zj3++I6U61/OfA9c8BKPl1fwxduhhG07rBCXl/fmns3rmr5q2PWzFzm8sTww5hWIer6pnCCPXBnbfjvl2TcNfWKZiyag5e3puGsjpP6DUqeRqs5GG00LozvfDnjH6qaof6UMoxfDBlt2HtnZvCXx2/d9qo+Oy3NFy9GTXFv8PgN+P+GRD9sgAlL3EVQqe4hLRsSo27/u4bUz4f8/qEXZ5pXa45kkJKVH8XMwsT6mfZiXhu/yjKLg+lGN9a7h1exsX13vz64aF46+gg2FWGQgqqTZ58pCQam872prcOp6DWbOAgdxOHeTSpwztfV9+avNv43vTdPW9Lzn7K179uE4a98RukvBYqa/xi1y8H0MBXEuDltrxrZPHHfxi/d+jqOz7TTknI4g+O9+cZK+dj//UY0il2VJhcsfFiT242ufPcpEysnLkBq6ZvwAvD0qFA4bUCXmZRKDTkQEGdD4pqfQGjFReqQuhkYRRb7YQ3D6fw5P9ewCtP9uJpCRfUD6duxfIpO7uNTc5+XeNuX4+01ycjfon+l0Dp5wMU87YBo9+Y6uKtbp6fcnrOylmbvBb2O60GuJnZy2iBTVW4qDqINoiqNLTqUFgRiPPXo8nV1USjYq8izLORPPVWTOt5VvA1o67Fk/ZnxbNGsfP5klDUt7rAQHY2temx73oMSptc+HRpCBXX+5CLSyuImDwNbZiceIFXztis++PkfYM7BFasQoDPs0he7vVzQfp5ACUt8UaI5fnEiMI1b0zeE7ts3E61e1ipandohSUdXHWMWb0uwdutBRlFHXC+LBShPrUID6xCq12L/KpgWGzyokmlq2X+1MYaUvR2dAiuRlObBpeq/CH4Ykyny+joU81fXo2jTdk9kFsTjADPegyMLIFGo6LFbMCh3E744nIXHt4pV/1w6i6PYYmXnnEJqV6DXi8l42eknw5Q4qs+8HF7pVeHokfeGL/LOD4+Wz1Y2BH1ZhewWBqSDNKgV1gpDeqSz7WN3rwzO1ENFokZn3QZbNPx+8cH8Z+OpmLNhZ78wv5RbG515T5hxRideIWKG70ppyIUerJhRu+LGN01jxptRryRPgR1FhdKCC5DbGA1zALkxyf7Y8HmGVi0bQpuXzEfORXejnenb8OvU09NMAaqyzH4jYE/FaOfCNB0DQJ19/QIK174/oxtxii3JvWe9dNx39ZJ2CI2xOYAk6DktBdehlaa2jUbRk0brznbB9crA/Gr7ucxJe4SqlqNeH5fGhavmYWssnAkh+fhxZH7ONjDjIvlobhSFoKuQRU8KLoQE+Ius4/RzLUWd2KHwinRRQj2bEJBjR/W5iSitNEDycFlaohPIz/z+Xg6XxDOS9IO8Ow+l5Ohd9yPySLtPwGlnwbQ9G4aECK6BtTpYgMr2d3Fio5h1ahu9sJbh1NxtiycNVqHdAGIgDHxuTSwaz41mN1oQ3YvDvduoFcnf05vT92F+d0v8KT4S5BQgN+fugUpUTfIzgriIqp4bt/TmBx3hTz1begRWooeIWWMNh37u7TyqM7XiWRuhRzspW9l5ysJ0LXRI4OO0x1JlznMs4FcNRbuHlwOsCMcFnjjJ6SfBlCdIRwObYdjBR34wNWu7OdmxtPD0zEl8SLyq4Px8pdjUFLvhSarDruuxAnxKiZ3ucIxgRXwdrOIXQU6+dVibGwubu95EQM7FqKm3oPWXUjAU3tG81M7R6lfZsXx6NjLGNklD1qNAwFuJprb8wx6drrBQ7vkIsqjDlsvxfPh4o787NiDGNS1ALuuxeNATgw/P/4L9IkqpuJmT5I+ApBSDkLdT8BHPOuPHdXz5agOAVVLHxi+Py3Crw6X6/zF3CjwE4/1xIjD3DWkko/ciKYX9ozkZ74ayfdvmYyD+Z0xqdtVZfPctTSvVxbvyYlVH95xm7j/2fjN9gl472QfbDidhP2X4nEyryO2nu6D9473p8d2j8d/bZqOe7ZMpY/EzsQH1ihbf7VaeXHkV2SBjt9MH0IvfT6OSio8eGbCZRhcbfgivzOZWo2KTgs0Wo1cJFINvTJAgfF+19RXQn4su8qPGhC/UR/dtfmZiUkFUxqtLtqcRn8o8nYVgUiFBgn+lfTKxM8pzL8W67P64NOMgegRVYyE8FK4u5mQXRrG89fNxv07J+N0YRhSO+big6nbkX73Rzj1xDvY9etVtOWuNTj51Ns4/tAHWDdnA83tdRoNJh3/4eAQAXQ+Vh3rBQ2rFOrVgtk9LsIuG//7N83ACztHiUdUyNvDRApUsDCmAbOiQnSdIkijvtJqcKzDgCVdpemWrx8HkL4uKsKltl9xpSdWSQDY1OTNeRVBaGnTiTlgqKxQWnQeLe5zGl6uzVjY+wTeHbsT5VUBNGfNbH5o53jEhlbg0znrsX7OWnos5TjphIlVp3vzivO96dUjQ8RoD8f7mX1oxcneyCv351m9L+DDmdvwmYyZ1+c0rz6TyDM+uZM3nE/ArN5n8M7UrZwYVkZ2siPBt5yfHXkAIb6NQglzcbU3Gk3uYqlYVTUEMmqHKr7GxzF0iRG3mH4UQG6hxf2HJeRGBfo0INinFh0CS/lAXiRvEzvTYNbLq1JBCuOewUexY/FKvDB5Lx2riMI92yfC1KrHytnr6eVRe6BnxorTA9ThH92DiZ/Op+f3jqff7R+FjzJTsOrsAHr1wCj63b4JWLhtOvoufRSP7riN8iWintXjHG276zOkdCnE87vH8LNbxyE1uoA+X/zfyH7iT7R78Sc0KuZaO+tnK0Lw5zP9qMWmg1Fng5fSJr5V9I5osN5F37G90y3cfgRAXxg6BZpGDutU5PXYkGPqvb2zONannsO8G/D0rjF4aNcEvHV8IN46NoAvlwYjKagYmy4l8psZKbiz/xn+aMYmRAbU8jN7RmH2+tn0SvoIyqkLgoW0RHo7id6AtICiZbGnxNCqsGsVqlENtD4nCYu3T6EFokrZZUF4Nu0AXp/yOS41++O3e8dwvYDQKq7/0/N9sPTocLycPhy/3jANe851Q5xfOY+KucqDYwrYVWkDOxSjVktuuMV06wD1vtnDS2NODXQ1IdKrmeb0PUe/GXCSZvS+hE7+jbzhbC968atRWLJ3PB7ZPhEP7xqPtZnd8XDqUTyaegSHb3bAjJXz8fGZFIl/vAgalcQTMlQNs4YBeWRVHsWmsBMioYyEaUV+FQHOwgacKOuI+3ZMw7N7R2FAxwLl/Rnb2aJq8KCsd8/mKfj9gWF45dBQLDs0CHa7qs5MyuHnRh7Gy+O+ohdG7Kenhh1CR89aMje463GLSZa/hZ7Jr4TERl9/YX7v7A6B7ma2OrQI8m5CakI+7u2XhVfT9sHX2MZsc2FoHZRV2gE7zvfC3SmnMEkCwlVnevHTeyYgtzGQoLWTXmX2VCV+UazwJMkOVZ7t7Ol8hk1+W6GDAyRhAmwiUqoCxaYXu6JwIxvok6wBeHT7JNaoDnpp/F5qtrrg8NV4sjo00DiIya5wtG8TPTwynUbF5yrR3nUU61uj3J96jJ8clhHWObzgIfR91w+3kJRb6APPIPOIuQNPj5s3IBNebhZoiGFXiVSrQo0mHepYRxq9VfTDLtMxdHoL7up7FKOi8/BB5kA8v2881bZ6kqLIwDYjj+hyDevmrsL6O1fSmjvXYfUda7H2zvVYM+MzqVuDz+auwbCwfFa1DsCpfjJr+yXcy6qyDmFbdk88vOM2ONoILw0/iM4BFSwSiTCvRtmjFYPtTJ39KkQWRTjZ6dc00CgQw34aiwacmejr2/wAwNQ+7w/cZMgPtP6lyc9F190NGmzOjlfXn03g4gZ3GMTwETloxelk3LNpCmos7lBIJbZqMbHbBTw45ChtPt8Dr+0biUazK2QhFtsMljlNohZ1skntElaGkfFXaETsNRoRd5XGJl5Dasc8ajUZYGFxOyJtMoDF0UFOQgDB18kxOet1hIM5PfCcgBTtU0FPpR2Eu6EVNpXQv+MNJIWXcrPZCEVxtAOj0ahwvliDnBLM731Gf9/o/Y8bx702G/9LErr/lx7SbLVwfUZRNBZvmIlHd43j3+yYqC49MIQP50eh0eIKjdgIFjVQVS2HejTyr3qeofwaf3zo9CJ2AylOKSB5W6KaTkOckd8VCzbdQb87MAJNrQYQaeBgrWABrD2TzPM3zcbRikhSxDZJIEOsESJ0doJIArXpBTANiBgwOHDgZidac7Y3p0bl0+CIfK6QwHBVVi/FRccwqTo5HnHjVpvClc0ufPxmOH+Y2Yc/zU5WU2NuuqZ0uDEL2OUqs//D638HqMtyf1ejeXJ5gwf0Ght6RpXCXbEg41oULz/Vm08VR8DFqV5OgjU2Gh2Tg66h5fzB6b58tTZIPJOoyV+WJxUgRYUYDzisRlQ2ebNdhE4VXh3SzSFvv8zmiha7EQ6HAAECkYyBM8lgSBZJENUARHpJZyWLqsV7mQNQbPbmRf1Owl9vQnm9H7exhvzdm2lvbmc8tm0CHpGIfUVmT2y/HIsXdozBzpwEdOtYLPyH4IeSdPih5i8MoYl5jw6Ly+9T22C0dwmo5sWpp/DEqHS8PWUHPTb0GHvomJttenm7RKFGM89IuojsygjsvJQEEgkgEg4h2aFh1ogUaK0ErYOg2EXkhWEBR1VFKCSrDkCjaNCuThJPwTkOf5VIOssc5Px1aJlE6hTWcJXJm9adTUavyFKkRBS1D/hIwosVEnJ0kB3/+MQrmCfOpG9UiewBm9jL2Iatp3qhus4rSjfscOf2Af/g9oMAhc46PHVqvysL+kQXI6VbHi2/cxtNjMmlcM9mOpofg2OF0VRQ403VDT7CIaFPh3wkhpdgzclkmB06ovbZFTAI7UxrBAEWSkRV0A4cQ+vEQ/p93ZchQiQd6C9Zxko/QUKenQOd9VInwDBkkNRCbyMJGWQfF4ubVV50W88c6I1WVFlc+Hd7RvCzO9PQbHKjnhEVR3q7TwAAEABJREFUSIsrkg1yHhb0OgsPvYlrGly79YkpfhKD1vrgH6S/rPJ3WlNf65vgW7Oku3dV0Li4q+qbk75UAl2a6GaNG228GI9jVcF4P6M/cquDANEdEmPYO7IE1S3uyG0I+Jp+Jz9Q0a4ScgdE0OBMTmZZnggKgSS3dxErhfbkVCNFGBdo4ayUzHCS6hwvv04p0wmUUmRpg0hUtd2FnIFnfGA5vPVmQAuyaTWkyuQXyv1427luZFBsGBd3RXl45GFaM3ct5vQ7y/0jCyaH+Fyd377u37kpf6cOiHk7YGjCtef6xhR2DvNqUJ2HXnoBoNWq5y+vd3bk1fmp1ypDuMnqxnZohD4FRq2DO3nV07nicBRX+5GTY/FoDIeWIVBIJ+FOqp3l9gxJIjGq0yNL7697QRFmobUROW0VVMAhuiZYSGc4H2HTyCAHQHZ8XQGQTCsSi9OlkeyusXKIa4sMVKWHQjcafXC5xoctDuLiai9Um9zYQ3b9CaEV7K5tg7fO4pKWmHs3hv/9U0cF30uHtCHdKxcmdShJK2l0l1O7RgAEGyvs7mJDuF8LuodW4PlR++X8J4d0LBwqKnkbmtE5pByNdoO4aEgSqlUFcDIu9gcsnAuvkLngTKQ4+WWJEdv7KNJVcbbLMGezM7cXSeyWHEyTEyhnhSL2ixwyi0wsnUg8p8wM2DV8tdKf3FzNSkpcvhCsY704ACtpqKjFhy5WBPLh6xF8WT4a2GVKq11LAe6tiA6o5xGdC2KTwssfQteV3wsehSxZ5a8u7ahjfe/oc2ZBiK/JJdynWY30bZBWoUxEWa9RMTSqhEZ1ukEDo25QascCdPStAmwkEm0TKbKyXStTCvMyCMIFxD5Io7ODUOUEAAy0QyO/crU/So1TCkQb4Ix5yFnpbHP+isBAxsnycM5HGge+kxxaGUOAeDNoNEKDCh+tmZxLeBtb1VFd89SZQ84juUMZ9QyromjfOgkpGKSIzRSjnhZ7DWzSYmbPc6MTBuVM/s7c8iDcyP3b65B2XLf82VMTLsfM7HZRvWfAKVwqDcW6Y33YqBEmVZlXAh5X8URFtX7wdTFh8eBMvDJxNwd4N8PmUCTCFoKFXpLXSk5vRfLg5My5RjuXUhBphBzaQ5VeUufs4bQldqdwyDgWVYZdzwwneZJJOtoVJ3bgdolh5ySS5VKcgAmCspaVFHZKOgvz/l71GN4tl/SwU6imFbfJ6eWIrnnwdW2FVqOykyybXSNfb9swJEFOO4NrPHv4l/8XkpdHyqzfXrL6t2Vg4JmuXUKKRwpl2CLnLYs+m4aJK/4LhRYDzLInqjO7cJ3JhTPk68X6rCRcqgxCSaUvLhYHolV21EIXkYg/WFh2zqyoMrkw43yWEtqBcjZIQWcjaKRBBbWrlnSDMzmkIJEya6VdQCS7RjqLgIi6isGDU1oB5xwEdraoMog10kFhHVgEQyXVuSfTESUHl9B9A04jgFrJ1GbkbLGbe6/G8M06X1ZZhsie0Cb7No2icq/gIgzrdK13ZKeS70iRcyVZ4ZuroXnX2bi6eevuxGM7J1JmSSjm9jvFAzoVY6NsMXZf6sobs3vgcEEkfXW5K9Yd74XrjR7YdqknmlrdSKthGIQLEQKZkCQznH9SkItBrOWvJUcj1Ypww3Dy6HAKgXQnySw2TToCMhJOLuCQH4aLi4kC3FoAjaiqtMlI6SJ3jYidInVOIG3STCqcEXhleQC/f6Q/2qTOT6Qmv9aP8ip8UFLvjZ3ZnXG2PFi1MGHH1Xj+9aapePHAcNXgatPHBJXOQOqb30aP3wXo+Cs3r90IfiG/2v9kkFeL4+3bt9PU7hfpWm0gX2/x4yb5LtU9qpLHd5FDKXnB4T718JCvmvIG0CZhfWWzF7uxjbQi9u18CveKZPzljYNkkKgnhGkIceRQWOvUSCcyAgkYonVakKgXOb2j3k4qAS4aB+5JycCn09eji3cVqyI1Ug0iuQvW7dMbbOSpM8FsMSK/NgDuHo2YNuA8OkXUsr9vMwI9W+TTkDcs0rnWrsfmK7G863I8ugVVU6DBgrVZvemB9bfjzPUOra5qo0yM9qS03//6duqZr0DKIleVv4LVQI1WN9yod0eEV7OSFFOhaXMomlOFYTY/3yb28zKh1aqncbGX4WIHXy0NQVxwFQe6tzCceyaRAFZlLatsjOw6EQ4FcIqXVio14nfFs0kU7dRosNxJukIksL2PXcvSDIAQ51PFC7pnsbhlbhUA0J5ECJ2ISnaO1Wrb0K9DEVosepwpCOO+ErR6Sjy09nhPrM3sixO5HZVO/iZNXFCdYra4Un5VAD27dSyulfrTogGZio/Whgaz4URTs/Yl87ElZe1LyE0olvvfXvsfuVhQE/bcliuJOX6ercqQqJsas0Vn+fRIj/TX9wx5+f3jwx6XTeKV0iZfpazWB+fKgtFsUXCpMoQivJrQ0a8e0Hz9mtuZ1NhlBREPuZO8QVLltQsAEHvVXssMpx3SCo4a8USsiKThm8Tw0prhLW/56I1IFDX7wqlCkHkAgiDrvMRhmJEUUoaSRj+Gnik+vA65N8OwJSuZPjzdEx9m9W5eey6u/MT1KNOwqCJa2C+LZqWcg79PE52rDbS0qPoV0PFCHPttBv4q/X2AnB0O3Zt1vCD6zfUnet44ktexNT0vuuSra/GPHP3og+cqqz32xASX2Z4buU/OYWo5vywKwf4tuFHryW0OHQbKzhoktkHmoXaJsRPE8LZzI0aRIRIkoDiYnAmKQsIqtTNqtwlkYjeY7cRWDWDRydcKI+yyvQh1d1oNBqsyscQ9pDr7Ctg2HXf1q4HEMnysKBKF1f7YeLInBkYU4xE5NGsyubYW1Af+6fNjqSnLvpo0M/1G9JbEwEp+fFiGUmlxMX+clfym5Uzow9j7VI7M/J3rHwMk3cqqo9d+sGPMmJ3nEh900duUYL+GNKkWPg26SP86F53Ojkti/OBiIQ+tXQhXsO9aLMZ2uUIxPrVwOBmh9lv7MFIJENx0Ght8fKopObqI9TKHyiR9CVYrISmiEncMOs3zB2ZiwbAMXjjmIM8edAZGvZVGypnRvN4n2ai1C35CuuDDElrIwpjQ+arYHxdkXO8ELdlRZXWl80JbcmSRfNUtqESzbg8yF95Anpp5ojjC/uzBMbkPbLl9zdI9Ix+6sGv0y6icZ2on8m9ussrf1Pz1Y/oCC7IX5RZtSf54+5Fu/W9U+GyLvOPVjnC3GQqKQpQaCd3btxNiUMsbXZEYVIFtsqv2dzfzvf2PsZvGxqp4l78IjPChlSIhObBM3TP/E/WJwUfIRQBSSIVO64AIEsZGX8eH43fivQk78O6oz/HOqC+wuE8mfNysHObbQov6ZsJbrDRLmMCyk2cJJcbGXaTJ3bLlQK87wr0acEf/LEKbK2cXR7DFqsDb1ewC1eDZzlqIWXe5MOTDzw+PGL5t6afzc1Yv+whlt5nb2/7O7YcB+nbADAcyf1s7PvZSWmefgtdArdMHdc0Lr5HT9FKLN3RwcP/gUvZ3N+F0eRh2X+2GiQkXMNrp7VRRCTmwIhbpkTI0NhL+qKbRja5UBIr9CkF2eTCfKwrBueJQKQfhQkkgZcvz+ZIQZN0MxZmiUGRJyHGmJISvVAaRTWIiQZrZwWLvKvHAwAzUWVzxWU4vSooqwaDIm2x0b6T8em8qrffiaLcGf8WzZig6LDFOSzsTP7hzcY4pfUEFIG8GP5xuESDnJKxxMyhxwzrmjwo0mBZnXo92/fPxFA73qsYfb9uBhUNP4HRFOJql67L0FFytDMEzw9LRw68K7GSIGGRsIwWE8+VRmLdhLm775C5MXrkAk1fPw+3r5+P2dfMwaeU8TF77X7h9/a8w+RNnlvJK6Sfl8SsW4vEvJqEBWkDmdFPsuH/AcSSKcV52eDAuV/lh68V4RPjU0+sTdiHSp54/ONmPfd1M2vjgqjvcutPzgcbGpapdGYRbTMot9gNS3ux6sdp3eERQvef4uFyf0V3y1GeGHMZzIw8hyKuJXz44gj6/kgiIMS2tD8Tv96fJqSD41XG7ODG0jNU2g7xxjbQT2yQOqW31QLXZG9Utki3uVNXqiqoWL64ye1JVq3t7uVo8lrO9qsUT1c0+qDJ5ol5OG+0OhdyVNjyacli2EFfw3tEU3p7TnSHbkAtVobT0aCr7Gc14YvhR6hlchUMXO6tR3jVhk5MuPBHoYepeZnIVhG+N81sHSEOxfsbWbl38q9Vf9c1S+4UXUc7NEH5jbxrftXY2ThR2gjgmeAnhI6KvgMUbPbVlLHwl+n1v8kZKCctjMTMiTKJrBgspRsk6KykGG2kUBpFk0Nd/0kUhBykygEiForWRIsEnSb1UI9qrhpcM34cF8l3uz0cG4tOjKZgYdxGDxH5ZrXpOvx5Nc9fPxAqJf/w9LOzccD+aepQ/mLpTE+DdoqkwucibXHJLvN9Sp3asGYX1bS5l2892p1fS0/iBHbfzW3IWfFzOf5I7FNKb43fhT5N20FtTttF7M7fSW9N3AgamBzZOgmrVYuXc9fT4sP3kZ2iBiDhU+bKhsizP3A6sk3k45JlkNTnekDJDJy5P73BCBPGFpNNaMTP5ND6Z8RlN75clUjqU12T2w72pJ/DutJ34k+Snhx/BGxP2qg8MPo7iRk88+cVoOlMWBl+DGaXVnvgqNxbNVq0bEO9cSRb74Uv54ea/arWHXSmo8Un/IjeGMooilMo2DzSb3TAx6RytmLkFiwaexPzeZzGzxwWEejajW3AlvTVtNyV0rsT9OyfieFEE7ks5hs9mrec7up3lKNc6VloVVlsN7Z5OlWjbGVSyyBArdlI1ku0A2xl+RhOPjL7KK6ZuxNsTd6BVoulFW6bjQl0ovzZtB9879DjLlodivevw+NDDWNg3S3lxxEF8PGszksOKYbHrqaTRk/6Ynso7LsVts1mMywBxPH/F3j8q3jpAJ2a0NjS4vXOxNPyAxaqTF8pKgHitheJSo72anF81SYQBZ2+EyFfVHlLUc2xAHb86di9ui8/l3+8Zhgc2TWQSVXlz8m5smrsar07YialJZ9EzpByBHs0U4FlPQcYGDnRplE/E9Tw29io/NOgwr5u9mj6e/Rl186/Aa3sH476dE1gn6rZs/G6amXxe0WvsSn2rO1vtGiKo5BDpdIpHr+AKnp50CVVtRjx/aDStO9+zki14D+lPlvwjQP62/tYBco48/PRpd4t9NtmUP8KuaXRxN5O3lxliNKHAjkLZ2W/Ki0OdHDesPp2IUtnDyZEmnkw7QMtn74DBaMeDO8bjrg1TKbsklOR8GG9P2oFNd6zCngUfYc/cj7F3wcf4Ys7H2DHvE3w0eYt4qZOwy1HLMzvHYvqqOXyqIpKfHHYYH07f2B532WXLwqxixbFk3nu5s9BBsIvk2RxAm5VQVusuku6Os2XRaHNo9qLJdsLJyq3mHweQzNqS8dtq1dj6MoQmYodVQiCSX9ysc8eqM0ksx6lBpn8AAAhTSURBVLFcVOOtpl+NxKUafz5XGcIW2X70iyii5dO307JJX8hRp5mXHk7lmWtm00NbJ2LNuZ58vCicTxSH87HCKJwsj+DPr3XBM7vG4M51M3HvtslUaXbnh4YfU7bftYbmJp8jT6OVNBqmLLGBO891536dC3GiJpTPydGqVmNlncYBwYia7QYCs50cvMeg07yMrCVmYeOWrx8NUPvMrUYdNOw/LuaaPs6vhptajXhr71D2EMVyF0kqbfQiV/c2vlASREcuR9Lv9w1FfoMPm1sNGBJdhHem7qadC1fTo6knEelfizMFsqk81w2bLyfQxpxu2CTlfdlx0BlsmNb9Em2Ytw5r5m6ge1NOwciqqLNW3L4rny0N4/pWHa0/3x2XC0KpT0AlVqQP5APXovlKfQDr5NXN7nuBYkKq2timbm7b+XReO/0/4vbTANLoNSC7j7ubneRQAno9Y97g80iMKMOZsnB2lYCwxeKOoZ0K4OttQoAcx54o6ID3TwxQD+R0VuuaXRDuIVuCXufw0ugDtEK+t626cwetnr0Vq+dspjV3bqW1d20SadtDD4k3Sgouky+xGpy7GYxWiZ73FXTiq41+OFocCXfXNnQNrJbA1Bc1TUYM7FSITdm90NjkDheDHd4SdrC4fhEny4/A5duuPw2gvY/Uw0wfr8pIvr42qw8pWhV9OtwkL72NEyUwM7cZMKpLLmmJcbXaD5O7XURRlSeSIsqp0uRCr341VP3yUrxa2uDJJbU+bLcTu+mt7GM0wVvfxm1WF6436bnObOTj12L4Zq0f77rShd/NGMBbchK4utmVVpxIlrMoDedUhUicUycmUeFLFf7oFF5DL03YSwOiblBJi5vywal+yC/xOQDFlv4t1z+i8NMAAhgZT+2obA544JUDw658cGQANZpc0De6iAZGFtOUpMsY0/U6doia9AmvRH2LB3JqfBHqXg+d7Pr1eguyy4Kx6WxPbMxKxHbZHtyo8cCRogi+WBYgHwl68Ut7hyNH1MT5T1iZ5UFohMJzZKOaWxzCrhqrSIZNrTO7cpZsSMMC6hATXIv7h512/iMpQtybcKPJG0/uGYPVJ3qkw6w+j4PPlv4IXL7t+lMB+nqCQw/uK6v3ufu1r4afe2HPGKoyu1CodyON7XqNVNJQt6g69A4roS9z42hwpxL4uVlxqiiKK5o9kNzxJp3Ni8CFygDYDCoUnUqvb09D5vUOmCKhg7dLK7w1ZuolXyIqG9xQXh5MdrsOgzvnUWWDFw+JvkHesCl9ZR5SFNyecBXRXvXkazDR7rOJysK1s2hjRsIee5Prfch66uLXBP/4+88DCKJDBx870tDgdvefjyYfu2fzFMfhvE5ktSsIcjdjavcc0rDCLS2uHOHdBCIVlY0+5FS1jj51iI0pkr2Yh3ruWoSolQ6eHmbW6lX4uzehzWSAuVWHKI8mUSUDUuKu4ax4LIedUC879/6diinMtxHTYnOQFl1Inf2rlUaznpYdTaV7dk5sPJnf6S1x/wtw6rHLPx6W/xmh/E/xZ5ROPJLJNp7+xbmEV+9aN9n0xqEhVGcxEMS2+HmY6JG0DOoqh+PFDT7ULbiUqsRWHLiYgHqJmzoF1SlqqysycjvDpOro/M0gNJv16C5um40OxIpNszIQ41MPk8kDnx4cgkFi78J8mjCrdza8DGJ75WRuf15nunvbVLz45eicmib3e4ei8XGkL5EjjZ/Blwz9ZQCSiZDxTDnI9FJZbeikpfuHbprw/gLbm+kDlapmdwpyl8jYtxY9gitkg5mFKb0uoWNgLTp6mDA45iZG9r9ITRJQTReGNWLw7RoFkR4mqq72I3fZsCb418Pb1YoHRmTg9TnbMLTTDWgAUm1E+693VBZtmk53fDqz4svz3f5oafaeiENPrUtPX2LHL5B+OYCcxDiJynjwgLU46K5zZREPv3hgxJG7Nkxpfn3/UGSVRpKpTUM+srsfINIxtvsVun/UEZqUcJXSOuTTpNjrmNT1Gj+Ydgz+4rp7yfajb2QJjHqVpvS8TKFeZvJzN1OAZxOKm71oy8VEun/zRF68ZfKNTWe7r6mv9Zgv+vocjt5b4CTll8q/LEDfUHXtrmYcePS9tib/WYevJCx88YsRH81fPSVv0WdTLG8fHUR7r3dS8mp8ySxRrkFjh4+hFWzVID2/I/KrglBQGowgn0aEiN1ysELF9V50+mYg1p5Lomf2jqa5q6c33v3ZbafXn+u3tLw4bDoKTQtx/Il9uLzE+g0Jv9TvPwegb6jLWFyO9Ic2OEqLf5OXHz79y7OJd7/8RdpH92wanzl37bTa+7eNtTy05TZsPt8DR290kO1GJIrlhOBmsyd2i+t/bMtEevzzMY5fb5hiWbBuavlDW8Ye+Sij35tZJTHzm+uMM6A2P4tTD2ahcIkYom8W/WV//7kAfUNr3jttOP3weZx8ZKVl7zP3FJ3tMv7s1S7j1h4fMG35waHL3sscUOXhbVG6hlWTTkMwWbT0pxMDzX8+mrp5RcagJw7mJk26mhs1oTHXbYJ9b8wT2P/IDpx8uhBOlf5mjX/S778GoO8QTw7kLq7Bid9k4tDDn+O49ukLxf6frs9M5IZqX6WuykPZXxLN2RWh69CgXSSqugwH79uHM4+ew7Unm3GL5zjfWfJnPCg/Y+wvNHSxzVJrWXoot/ODb6QPOPD6oQHpGzN7PNZSH/xbXLy3/hda5CdP828AkNCe+WqtevDpd2t2vTCy5suXhtv2PPcm0kXKpOn/+vr3AOhbFCQyhzN/W/F/Xvg3A+j/HI/vEfAfgL4HyXcr/gPQd/H43tN/APoeJN+t+A9A38Xje0///wL0PSj+fsX/AwAA//8QtiLwAAAABklEQVQDAOqMP50x7+0TAAAAAElFTkSuQmCC" alt="Logo Lions Club International" class="w-20 h-20 shrink-0 object-contain">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-black text-lions-blue tracking-tight uppercase">Val de Rosselle</h1>
+                    <p class="text-xs md:text-sm font-semibold text-slate-500 tracking-wider uppercase">Fiche officielle de Fonds de Caisse</p>
+                </div>
+            </div>
+
+            <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-3 text-right space-y-2">
+                <div class="flex items-center justify-end gap-3">
+                    <label class="text-xs font-bold text-slate-700 uppercase">Événement :</label>
+                    <input type="text" id="eventName" value="Soirée Dansante" class="font-bold text-slate-900 text-sm bg-yellow-100 px-2 py-1 rounded border border-yellow-400 text-center w-44">
+                </div>
+                <div class="flex items-center justify-end gap-3">
+                    <label class="text-xs font-bold text-slate-700 uppercase">Édité le :</label>
+                    <input type="date" id="eventDate" class="font-bold text-slate-900 text-sm bg-yellow-100 px-2 py-1 rounded border border-yellow-400 text-center">
+                </div>
+            </div>
+        </header>
+
+        <!-- TITRE FONDS DE CAISSE -->
+        <div class="text-center py-2">
+            <h2 class="text-xl md:text-2xl font-black italic tracking-wide text-lions-blue uppercase">FONDS DE CAISSE</h2>
+        </div>
+
+        <!-- SECTION COMPTAGE ESPÈCES -->
+        <section class="grid grid-cols-1 md:grid-cols-2 grid-print-2 gap-6">
+            
+            <!-- PIÈCES -->
+            <div class="bg-slate-50 rounded-lg border border-slate-300 p-4 space-y-3">
+                <div class="border-b-2 border-slate-800 pb-1 mb-3 text-center">
+                    <h3 class="text-base font-bold text-slate-900 uppercase">Pièces</h3>
+                </div>
+                
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="0.05" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">0,05 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c005">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="0.10" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">0,10 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c010">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="0.20" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">0,20 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c020">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="0.50" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">0,50 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c050">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="1.00" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">1,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c100">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="2.00" class="coin-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">2,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_c200">0,00</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-300 flex justify-between items-center font-bold">
+                    <span class="text-slate-900">Total 1 :</span>
+                    <span id="total1" class="text-base font-mono bg-white px-4 py-1 rounded border border-slate-400">0,00</span>
+                </div>
+            </div>
+
+            <!-- BILLETS -->
+            <div class="bg-slate-50 rounded-lg border border-slate-300 p-4 space-y-3">
+                <div class="border-b-2 border-slate-800 pb-1 mb-3 text-center">
+                    <h3 class="text-base font-bold text-slate-900 uppercase">Billets</h3>
+                </div>
+                
+                <div class="space-y-2 text-sm">
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="5" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">5,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b5">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="10" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">10,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b10">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="20" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">20,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b20">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="50" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">50,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b50">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="100" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">100,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b100">0,00</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-2">
+                        <input type="number" min="0" data-val="200" class="bill-input w-16 p-1 text-center font-bold bg-yellow-100 border border-yellow-400 rounded" inputmode="numeric">
+                        <span class="font-bold text-slate-700">x</span>
+                        <span class="w-16 font-semibold text-slate-800 text-right">200,00 €</span>
+                        <span class="font-bold text-slate-700">=</span>
+                        <span class="w-20 text-right font-mono font-bold text-slate-900" id="res_b200">0,00</span>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-300 flex justify-between items-center font-bold">
+                    <span class="text-slate-900">Total 2 :</span>
+                    <span id="total2" class="text-base font-mono bg-white px-4 py-1 rounded border border-slate-400">0,00</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- FONDS DE CAISSE GLOBAL -->
+        <div class="flex items-center justify-start gap-4 pt-4 border-t border-slate-200">
+            <span class="font-bold text-slate-900 text-base">Fonds de caisse :</span>
+            <div class="flex items-center gap-2">
+                <span id="fondsDeCaisse" class="font-mono text-lg font-bold bg-white px-6 py-1.5 rounded border-2 border-black">0,00</span>
+                <span class="font-bold text-lg">€</span>
+            </div>
+        </div>
+
+        <!-- SECTION SIGNATURES AVEC HAUTEUR DE SIGNATURE AGRANDIE (style height: 96px) -->
+        <footer class="pt-6 border-t-2 border-black grid grid-cols-1 md:grid-cols-2 grid-print-2 gap-8">
+            <div class="space-y-3">
+                <h3 class="text-center font-bold text-slate-900 text-base uppercase">Responsable</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Nom :</span>
+                        <input type="text" id="respNom" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Prénom :</span>
+                        <input type="text" id="respPrenom" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Signature :</span>
+                        <input type="text" id="respSig" style="height: 96px;" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <h3 class="text-center font-bold text-slate-900 text-base uppercase">Vérificateur</h3>
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Nom :</span>
+                        <input type="text" id="verifNom" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Prénom :</span>
+                        <input type="text" id="verifPrenom" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-700 font-semibold w-24 text-right shrink-0">Signature :</span>
+                        <input type="text" id="verifSig" style="height: 96px;" class="w-full p-1.5 font-bold bg-yellow-100 border border-yellow-400 rounded">
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPT DE CALCULS ET D'IMPRESSION -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dateInput = document.getElementById('eventDate');
+            if (dateInput && !dateInput.value) {
+                const today = new Date().toISOString().split('T')[0];
+                dateInput.value = today;
+            }
+
+            const formatNumber = (val) => {
+                return new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
+            };
+
+            const calculateAll = () => {
+                let t1 = 0;
+                document.querySelectorAll('.coin-input').forEach(input => {
+                    const count = parseFloat(input.value) || 0;
+                    const val = parseFloat(input.dataset.val);
+                    const subtotal = count * val;
+                    t1 += subtotal;
+                    const valStr = val.toFixed(2);
+                    const resId = 'res_c' + valStr.replace('.', '');
+                    const resElem = document.getElementById(resId);
+                    if (resElem) resElem.textContent = formatNumber(subtotal);
+                });
+                const total1Elem = document.getElementById('total1');
+                if (total1Elem) total1Elem.textContent = formatNumber(t1);
+
+                let t2 = 0;
+                document.querySelectorAll('.bill-input').forEach(input => {
+                    const count = parseFloat(input.value) || 0;
+                    const val = parseFloat(input.dataset.val);
+                    const subtotal = count * val;
+                    t2 += subtotal;
+                    const resElem = document.getElementById('res_b' + val);
+                    if (resElem) resElem.textContent = formatNumber(subtotal);
+                });
+                const total2Elem = document.getElementById('total2');
+                if (total2Elem) total2Elem.textContent = formatNumber(t2);
+
+                const totalGlobal = t1 + t2;
+                const fondsElem = document.getElementById('fondsDeCaisse');
+                if (fondsElem) fondsElem.textContent = formatNumber(totalGlobal);
+
+                saveToLocalStorage();
+            };
+
+            const saveToLocalStorage = () => {
+                const data = {};
+                document.querySelectorAll('input').forEach(input => {
+                    if (input.id) data[input.id] = input.value;
+                });
+                localStorage.setItem('fonds_de_caisse_val_de_rosselle_v5', JSON.stringify(data));
+            };
+
+            const loadFromLocalStorage = () => {
+                const saved = localStorage.getItem('fonds_de_caisse_val_de_rosselle_v5');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        Object.keys(data).forEach(id => {
+                            const input = document.getElementById(id);
+                            if (input) input.value = data[id];
+                        });
+                    } catch (e) {
+                        console.error('Erreur chargement localStorage', e);
+                    }
+                }
+            };
+
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', calculateAll);
+            });
+
+            const resetBtn = document.getElementById('btnReset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    if (confirm('Voulez-vous vraiment effacer toutes les données du formulaire ?')) {
+                        document.querySelectorAll('input').forEach(input => {
+                            if (input.type === 'number') {
+                                input.value = '';
+                            }
+                            if (input.type === 'text' && input.id !== 'eventName') {
+                                input.value = '';
+                            }
+                        });
+                        const evName = document.getElementById('eventName');
+                        if (evName) evName.value = 'Soirée Dansante';
+                        const today = new Date().toISOString().split('T')[0];
+                        const evDate = document.getElementById('eventDate');
+                        if (evDate) evDate.value = today;
+                        localStorage.removeItem('fonds_de_caisse_val_de_rosselle_v5');
+                        calculateAll();
+                    }
+                });
+            }
+
+            loadFromLocalStorage();
+            calculateAll();
+        });
+    </script>
+</body>
+</html>
